@@ -1,0 +1,12 @@
+opencv-python
+numpy
+torch
+torchvision
+ultralytics
+scipy
+filterpy
+fastapi
+uvicorn
+streamlit
+mediapipe
+lap
