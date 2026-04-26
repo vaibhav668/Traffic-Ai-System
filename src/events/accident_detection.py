@@ -2,12 +2,16 @@ from ultralytics import YOLO
 import cv2
 import time
 import math
+from collections import deque
+
+accident_buffer = deque(maxlen=10)
+threshold = 5
 
 model = YOLO("yolov8n.pt")
 
 VEHICLE_CLASSES = [2, 3, 5, 7]
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(r"C:\Users\vpokh\Downloads\Highway_Accident_Video_Generation.mp4")
 
 prev_positions = {}
 prev_speeds = {}
@@ -94,9 +98,11 @@ while True:
                 accident_flag = True
 
     # Display alert
-    if accident_flag:
+    accident_buffer.append(1 if accident_flag else 0)
+
+    if sum(accident_buffer) >= threshold:
         cv2.putText(frame, "ACCIDENT DETECTED!", (50, 80),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
+                cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
 
     cv2.imshow("Accident Detection", frame)
 

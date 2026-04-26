@@ -34,5 +34,7 @@ class FightDetector:
         with torch.no_grad():
             outputs = self.model(image)
             _, pred = torch.max(outputs, 1)
+            probs = torch.softmax(outputs, dim=1)
+            confidence = probs[0][pred].item()
 
-        return self.class_names[pred.item()]
+            return self.class_names[pred.item()], confidence
