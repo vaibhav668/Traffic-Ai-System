@@ -1,0 +1,8 @@
+path: data/fire_yolo
+
+train: images/train
+val: images/test
+
+names:
+  0: Fire
+  1: Smoke

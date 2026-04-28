@@ -3,11 +3,12 @@ from collections import deque
 from fire_classifier import FireDetector
 
 detector = FireDetector("models/fire_model.pth")
+
 cap = cv2.VideoCapture(0)
 
-# Stronger temporal settings
+# 🔧 Improved temporal settings
 buffer_size = 20
-threshold = 12
+threshold = 10
 frame_buffer = deque(maxlen=buffer_size)
 
 while True:
@@ -17,15 +18,15 @@ while True:
 
     h, w, _ = frame.shape
 
-    # Grid settings
-    grid_size = 2
+    # 🔥 Better grid (more precise)
+    grid_size = 3
     patch_h = h // grid_size
     patch_w = w // grid_size
 
-    fire_detected = 0
+    fire_score = 0
+    smoke_score = 0
     boxes = []
 
-    # 🔍 Grid-based detection
     for i in range(grid_size):
         for j in range(grid_size):
             y1 = i * patch_h
@@ -37,26 +38,34 @@ while True:
 
             label, conf = detector.predict(patch)
 
-            # Strong confidence filter
-            if label in ["Fire", "Smoke"] and conf > 0.75:
-                fire_detected += 1
+            # 🔥 Stronger logic
+            if label == "Fire" and conf > 0.75:
+                fire_score += conf
                 boxes.append((x1, y1, x2, y2))
 
-    # Temporal buffer update
-    frame_buffer.append(1 if fire_detected > 0 else 0)
+            elif label == "Smoke" and conf > 0.80:
+                smoke_score += conf
+                boxes.append((x1, y1, x2, y2))
+
+    # 🧠 Weighted decision
+    frame_score = fire_score * 1.5 + smoke_score
+
+    frame_buffer.append(frame_score)
 
     # 🚨 Final decision
-    if sum(frame_buffer) >= threshold:
-        cv2.putText(frame, "FIRE/SMOKE DETECTED!", (50, 80),
+    if sum(frame_buffer) > threshold:
+        cv2.putText(frame, "FIRE DETECTED!", (50, 80),
                     cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
 
-        # Draw detected boxes
         for (x1, y1, x2, y2) in boxes:
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 3)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
-    # Debug (optional but useful)
-    cv2.putText(frame, f"Fire patches: {fire_detected}", (20, 40),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 0), 2)
+    # Debug info
+    cv2.putText(frame, f"FireScore: {fire_score:.2f}", (20, 40),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+
+    cv2.putText(frame, f"SmokeScore: {smoke_score:.2f}", (20, 70),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
 
     cv2.imshow("Fire Detection", frame)
 

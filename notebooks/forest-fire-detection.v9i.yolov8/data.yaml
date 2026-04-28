@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['fire', 'smoke']
+
+roboflow:
+  workspace: ghulam-ishaq-khan-institute-3qit1
+  project: forest-fire-detection-fis51
+  version: 9
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/ghulam-ishaq-khan-institute-3qit1/forest-fire-detection-fis51/dataset/9
