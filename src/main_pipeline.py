@@ -173,7 +173,7 @@ def process_frame(frame):
             conf = float(box.conf[0])
 
             
-            label = model.names[cls_id]
+            label = fire_detector.names[cls_id]
 
             
             if conf > 0.6 and label in ["fire", "smoke"]:

@@ -21,7 +21,7 @@ def alert_card(title, status):
     """, unsafe_allow_html=True)
 
 st.set_page_config(layout="wide")
-st.title("🚦 AI Traffic Surveillance Dashboard")
+st.title("🕵️‍♂️INTELLIGUARD SURVEILLANCE ")
 
 # ================= CONTROLS =================
 st.sidebar.header("Controls")
